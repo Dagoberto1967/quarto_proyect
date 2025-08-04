@@ -103,7 +103,7 @@ El presente documento tiene como objetivo dar cuenta de una experiencia de **int
 
 La propuesta es conocer Quarto a partir de un caso puntual de trabajo y repasar, paso a paso, sus prestaciones en el marco de la construcción de una narrativa exploratoria.
 
-# Preparación
+# preparación
 
 ## Eligiendo los datos
 
