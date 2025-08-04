@@ -1,0 +1,228 @@
+---
+title: "MANUAL QUARTO"  
+subtitle: "TALLER"  # Subtítulo del documento
+date: today  # Fecha actual en formato español
+author:  # Información sobre los autores
+  - name: Dagoberto Salgado Horta # Nombres de los autores, separados por <br> para salto de línea en HTML
+    affiliation: "Universidad del Tolima"  # Afiliación de los autores (nombre de la universidad)
+    affiliation-url: "https://www.ut.edu.co/"  # URL que lleva a la página web de la universidad
+title-block-banner: "#a18e89"  # Color del banner de título en formato hexadecimal
+lang: es  # Idioma del documento, en este caso en español
+format:
+  html:  # Formato de salida en HTML
+    page-layout: full  # Configura el diseño de la página para usar el ancho completo
+    fontsize: 16pt  # Tamaño de la fuente del documento (16 puntos)
+    toc: true  # Activa la tabla de contenido
+    toc-location: right  # Ubicación de la tabla de contenido (a la izquierda)
+    number-sections: true  # Activa la numeración de las secciones
+    code-fold: true  # Permite ocultar el código, mostrando solo un resumen con "Ver código"
+    code-summary: "Ver código"  # El texto mostrado para los resúmenes de código oculto
+    html-math-method: katex  # Usa Katex para representar las fórmulas matemáticas en HTML
+    smooth-scroll: true  # Activa el desplazamiento suave al navegar por la página
+    link-external-icon: true  # Muestra un ícono en los enlaces externos
+    link-external-newwindow: true  # Los enlaces externos se abren en una nueva ventana
+    citations-hover: true  # Activa el efecto hover (desplegar) en las citas
+    footnotes-hover: true  # Activa el efecto hover (desplegar) en las notas al pie
+    theme: "Dark"  # Opción de tema alternativo con mayor contraste
+    highlight-style: "Monokai"  # Resaltado de código con contraste
+    code-overflow: "scroll"  # Controla desbordamiento de código en pantallas pequeñas
+    text-align: justify  # Alineación justificada para el texto
+    color: "#333333"  # Color del texto (gris oscuro para mejorar la legibilidad)
+    link-color: "#3892f8"  # Color de los enlaces (azul)
+    heading-color: "#3892f8"  # Color de los encabezados (azul)
+editor: visual  # Usa el editor visual para la creación del documento en RStudio
+knitr:
+  opts_chunk:  # Opciones predeterminadas para los bloques de código (chunks) de R
+    message: false  # Mostrar mensajes generados por el código
+    warning: false  # Mostrar advertencias si es necesario
+    fig.align: "center"  # Alinea las figuras generadas al centro
+    fig.width: 10  # Ajusta el tamaño de las figuras a 6 unidades
+    fig.height: 6  # Ajusta la altura de las figuras a 6 unidades
+    out.width: "70%"  # Asegura que las figuras se adapten al 70% del ancho disponible
+
+---
+
+```{=html}
+<div style="position: absolute; top: 10px; right: 10px;">
+  <img src="Logo_ut.png" alt="Logo Universidad del Tolima" style="width: 150px; height: auto;">
+</div>
+```
+
+```{=html}
+<style type="text/css">
+  body {
+    font-size: 120%;
+    text-align: justify;
+  }
+</style>
+```
+
+# .Paquetes a Instalar y a cargar
+
+```{r paquetes}
+# Verificar, instalar y activar el paquete "tidyverse"
+if (!require(tidyverse)) {
+  install.packages("tidyverse")
+}
+library(tidyverse)
+
+# Verificar, instalar y activar el paquete "kableExtra"
+if (!require(kableExtra)) {
+  install.packages("kableExtra")
+}
+library(kableExtra)
+
+# Verificar, instalar y activar el paquete "readxl"
+if (!require(readxl)) {
+  install.packages("readxl")
+}
+library(readxl)
+
+# Verificar, instalar y activar el paquete "readxl"
+if (!require(palmerpenguins)) {
+  install.packages("palmerpenguins")
+}
+library(palmerpenguins)
+
+# Verificar, instalar y activar el paquete "readxl"
+if (!require(dplyr)) {
+  install.packages("dplyr")
+}
+library(dplyr)
+```
+
+[@tidyverse; @kableExtra; @readxl; @palmerpenguins]
+
+# .Introducción
+
+El presente documento tiene como objetivo dar cuenta de una experiencia de **integración** de lenguajes de programación[^1], posible gracias a [Quarto](https://quarto.org/), un sistema de publicación científica y técnica basado en Pandoc [^2]que funciona de manera amigable con Rstudio (posit).
+
+[^1]: Un antecedente documentado y con código abierto de la experiencia puede consultarse aquí [Utilizando Python y R en Quarto](https://rpubs.com/ilordenato/pythonr).
+
+[^2]: <https://pandoc.org>
+
+La propuesta es conocer Quarto a partir de un caso puntual de trabajo y repasar, paso a paso, sus prestaciones en el marco de la construcción de una narrativa exploratoria.
+
+# preparación
+
+## Eligiendo los datos
+
+Como todo el mundo dice,
+
+> los pingüinos son muy lindos! ...así que trabajemos hoy con datos de pingüinos.
+
+::: callout-note
+Tenga en cuenta que el conjunto de datos de palmerpenguins pretende ser una alternativa a los datos de iris de uso común.
+:::
+
+::: {.callout-caution collapse="true"}
+## Ampliar para obtener más información sobre dónde se recopilaron los datos
+
+Los datos fueron recopilados y puestos a disposición por la Dra. Kristen Gorman y la Estación Palmer, Antártida LTER, miembro de la Red de Investigación Ecológica a Largo Plazo.
+:::
+
+```{r datos}
+
+pinguinos <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv') %>% 
+  drop_na()
+head(pinguinos)
+```
+
+Hemos eliminado los valores que faltan aquí, lo que significa que los datos tienen `r nrow(penguins)` filas ahora[^3]
+
+[^3]: Tenga en cuenta que están eliminadas las filas con valores faltantes!
+
+```{r}
+# Cargar el paquete dplyr
+library(dplyr)
+
+# Código
+especies_pinguinos <- pinguinos %>% 
+  distinct(species) %>% 
+  pull(species) %>% 
+  knitr::combine_words(and = " y ", oxford_comma = FALSE)
+
+# Mostrar el resultado
+especies_pinguinos
+
+```
+
+La base de datos de pingüinos presenta datos de `r nrow(pinguinos)` pinguinos. Las especies representadas en esta base de datos son `r especies_pinguinos`.
+
+# Algunas estadísticas descriptivas
+
+[![pingüinos de Palmer](images/clipboard-3699167880.png){width="800"}](https://allisonhorst.github.io/palmerpenguins/)
+
+```{r}
+
+# Aplicar el group_by y summarise, excluyendo la columna 'year'
+tabla <- pinguinos %>% 
+  select(-year) %>%  # Eliminar la columna 'year'
+  group_by(species) %>% 
+  summarize(across(where(is.numeric), mean, na.rm = TRUE))
+
+# Mostrar la tabla utilizando kable
+kable(tabla, align = "c") %>% 
+  kable_styling("striped", full_width = F)
+
+```
+
+```{r}
+# Cargar la librería ggplot2
+library(ggplot2)
+
+# Crear el gráfico utilizando el data frame pinguinos
+ggplot(pinguinos, aes(x = flipper_length_mm, y = bill_length_mm, color = species, shape = species)) +
+  geom_point(size = 2) +  # Puntos
+  geom_smooth(method = "lm", se = FALSE, aes(color = species), linetype = "solid") +  # Líneas de regresión
+  labs(title = "Flipper and bill length",
+       subtitle = "Dimensions for Adelie, Chinstrap and Gentoo Penguins at Palmer Station LTER",
+       x = "Flipper length (mm)",
+       y = "Bill length (mm)") +
+  scale_color_manual(values = c("orange", "purple", "green")) +  # Colores personalizados
+  theme_minimal() +  # Estilo minimalista
+  theme(legend.title = element_blank())  # Sin título en la leyenda
+
+```
+
+# Tablas y gráficas
+
+::: panel-tabset
+## Tabla
+
+```{r}
+# Aplicar el group_by y summarise, excluyendo la columna 'year'
+tabla <- pinguinos %>% 
+  select(-year) %>%  # Eliminar la columna 'year'
+  group_by(species) %>% 
+  summarize(across(where(is.numeric), mean, na.rm = TRUE))
+
+# Mostrar la tabla utilizando kable
+kable(tabla, align = "c") %>% 
+  kable_styling("striped", full_width = F)
+```
+
+## .Gráfica
+
+```{r}
+# Cargar la librería ggplot2
+library(ggplot2)
+
+# Crear el gráfico utilizando el data frame pinguinos
+ggplot(pinguinos, aes(x = flipper_length_mm, y = bill_length_mm, color = species, shape = species)) +
+  geom_point(size = 2) +  # Puntos
+  geom_smooth(method = "lm", se = FALSE, aes(color = species), linetype = "solid") +  # Líneas de regresión
+  labs(title = "Flipper and bill length",
+       subtitle = "Dimensions for Adelie, Chinstrap and Gentoo Penguins at Palmer Station LTER",
+       x = "Flipper length (mm)",
+       y = "Bill length (mm)") +
+  scale_color_manual(values = c("orange", "purple", "green")) +  # Colores personalizados
+  theme_minimal() +  # Estilo minimalista
+  theme(legend.title = element_blank())  # Sin título en la leyenda
+```
+:::
+
+
+# .Codigo latex
+
+$$\int_1^\infty \frac{1}{x^2} \, dx = \left[ -\frac{1}{x} \right]_1^\infty = 1$$
